@@ -1,0 +1,14 @@
+Criar um TAD de CONJUNTO's, sendo ele implementado com base em dois TAD's diferentes, e
+a específica implementação deve ser escolhida pelo usuário em tempo de execução. Tal que, 
+as específicas duas formas de implementar o CONJUNTO sejam a que possibilitem a menor 
+complexidade computacional possível.
+
+TAD's que poderiam ser utilizados: 
+
+Hash Table e AVL
+
+Capítulo 11: Hash Tables
+
+Capítulo 12: Binary Search Trees (BSTs) 
+
+Capítulo 13: Red-Black Trees
