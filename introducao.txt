@@ -7,8 +7,8 @@ TAD's que poderiam ser utilizados:
 
 Hash Table e AVL
 
-Capítulo 11: Hash Tables
+Capítulos no "Introdução à Algoritmos" de Cormen
 
-Capítulo 12: Binary Search Trees (BSTs) 
+Capítulo 12: * Binary Search Trees (BSTs) 
 
-Capítulo 13: Red-Black Trees
+Capítulo 13: * Red-Black Trees
