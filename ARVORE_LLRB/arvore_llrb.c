@@ -251,10 +251,11 @@ NO *insere_no(NO *root, int chave, int *resp) {
     // Cria um novo nó vermelho com a chave.
     NO *novo = (NO *)malloc(sizeof(NO));
 
-    if (!novo) {  // Caso de falha na alocação.
-      *resp = 0;
-      return NULL;
-    }
+    if (!novo) {
+			fprintf(stderr, "Erro: Falha na alocação de memória\n");
+			*resp = 0;
+    return NULL;
+}
 
     novo->chave = chave;
     novo->cor = RED;
