@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "stdlib.h": "c",
-        "bst_avl.h": "c"
+        "bst_avl.h": "c",
+        "set.h": "c",
+        "stdio.h": "c",
+        "arvore_llrb.h": "c"
     }
 }

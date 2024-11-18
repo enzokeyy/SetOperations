@@ -10,42 +10,49 @@ typedef NO *ARVLLRB;
 
 // Struct Nó
 typedef struct no {
-  NO *esq;
-  NO *dir;
+  struct no *esq;
+  struct no *dir;
   int chave;
   int cor;
 } NO;
 
-// Instancia o root para que podessemos sempre tê-lo guardado
-// NO**
-ARVLLRB *root = NULL;
-
 // Protocolo das Funções
+
+// Auxiliares
 int cor_no(NO *H);
 void troca_cor(NO *h);
-
 NO *rotacionar_esquerda(NO *root);
 NO *rotacionar_direita(NO *root);
-
 NO *move2_esq_red(NO *root);
 NO *move2_dir_red(NO *root);
-
-NO *balancear(NO *root);
-
-int insere_arvllrb(ARVLLRB *raiz, int chave);
+NO *balancear_no(NO *root);
 NO *insere_no(NO *root, int chave, int *resp);
-int remove_arvllrb(ARVLLRB *root, int chave);
 NO *remove_no(NO *root, int chave);
 NO *removerMenor(NO *root);
-
 NO *procuraMenor(NO *root);
 
-void libera_arvllrb(NO *root);
+int arvllrb_consultar(ARVLLRB *raiz, int chave);
 
+void no_imprimir(NO *no);
+void no_apagar(NO *no);
 
-int consulta_arvllrb(ARVLLRB *raiz, int chave);
+// Principais
 
-// Funções auxiliares
+//colocar int como void - pra não dar resposta;
+int arvllrb_inserir(ARVLLRB *raiz, int chave);
+int arvllrb_remover(ARVLLRB *root, int chave);
+void arvllrb_imprimir(ARVLLRB *raiz);
+void arvllrb_apagar(ARVLLRB **raiz);
+ARVLLRB *arvllrb_criar(void);
+
+// Função para criar arvllrb
+ARVLLRB *arvllrb_criar(void) {
+  ARVLLRB *raiz = (ARVLLRB *)malloc(sizeof(ARVLLRB));
+
+  *raiz = NULL; // Inicializa a raiz como NULL
+
+  return raiz;
+}
 
 // Função que retorna a cor do nó passado
 int cor_no(NO *H) {
@@ -116,22 +123,24 @@ NO *rotacionar_esquerda(NO *root) {
 NO *move2_esq_red(NO *root) {
   // Troca as cores do nó atual e seus filhos (simula "emprestar" cor).
   troca_cor(root);
+  /*
+  Verifica se o filho esquerdo do nó direito é vermelho.
+   Exemplo:
+   Antes:   B(root)
+           /  \
+         B    R
+             /
+            R
+   Após rotação:
+             R
+           /   \
+          B     B
+  */
 
-  // Verifica se o filho esquerdo do nó direito é vermelho.
-  // Exemplo:
-  // Antes:   B(root)
-  //         /  \
-  //       B    R
-  //           /
-  //          R
-  // Após rotação:
-  //           R
-  //         /   \
-  //        B     B
   if (cor_no(root->dir->esq) == RED) {
-    root->dir = rotacionar_direita(root->dir);  // Ajusta o filho direito.
-    root = rotacionar_esquerda(root);          // Rotaciona o nó atual à esquerda.
-    troca_cor(root);                           // Restaura as cores.
+    root->dir = rotacionar_direita(root->dir); // Ajusta o filho direito.
+    root = rotacionar_esquerda(root); // Rotaciona o nó atual à esquerda.
+    troca_cor(root);                  // Restaura as cores.
   }
 
   return root;
@@ -146,20 +155,22 @@ NO *move2_esq_red(NO *root) {
 NO *move2_dir_red(NO *root) {
   // Troca as cores do nó atual e seus filhos.
   troca_cor(root);
+  /*
+  Verifica se o filho esquerdo do nó esquerdo é vermelho.
+   Exemplo:
+   Antes:    B(root)
+            /  \
+           R    B
+          /
+         R
+   Após rotação:
+             R
+           /   \
+          B     B
+  */
 
-  // Verifica se o filho esquerdo do nó esquerdo é vermelho.
-  // Exemplo:
-  // Antes:    B(root)
-  //          /  \
-  //         R    B
-  //        /
-  //       R
-  // Após rotação:
-  //           R
-  //         /   \
-  //        B     B
   if (cor_no(root->esq->esq) == RED) {
-    root = rotacionar_esquerda(root);  // Rotaciona o nó atual à esquerda.
+    root = rotacionar_esquerda(root); // Rotaciona o nó atual à esquerda.
     troca_cor(root);                  // Restaura as cores.
   }
 
@@ -172,45 +183,53 @@ NO *move2_dir_red(NO *root) {
  * @param root Ponteiro para o nó raiz da subárvore.
  * @return Ponteiro para o nó ajustado após o balanceamento.
  */
-NO *balancear(NO *root) {
-  // Caso: Filho direito é vermelho, mas filho esquerdo não.
-  // Exemplo:
-  // Antes:   B(root)
-  //           \
-  //            R
-  // Após rotação:
-  //           R
-  //         /   \
-  //        B     B
+NO *balancear_no(NO *root) {
+  /*
+  Caso: Filho direito é vermelho, mas filho esquerdo não.
+   Exemplo:
+   Antes:   B(root)
+             \
+              R
+   Após rotação:
+             R
+           /   \
+          B     B
+  */
+
   if (cor_no(root->dir) == RED) {
     root = rotacionar_esquerda(root);
   }
 
-  // Caso: Filho esquerdo e neto esquerdo são vermelhos.
-  // Exemplo:
-  // Antes:      B(root)
-  //            /
-  //          R
-  //         /
-  //        R
-  // Após rotação:
-  //           R
-  //         /   \
-  //        B     B
+  /*
+  Caso: Filho esquerdo e neto esquerdo são vermelhos.
+  Exemplo:
+  Antes:      B(root)
+             /
+           R
+          /
+         R
+  Após rotação:
+            R
+          /   \
+         B     B
+  */
   if (root->esq != NULL && cor_no(root->dir) == RED &&
       cor_no(root->esq->esq) == RED) {
     root = rotacionar_direita(root);
   }
 
-  // Caso: Ambos os filhos são vermelhos.
-  // Exemplo:
-  // Antes:    B(root)
-  //         /    \
-  //       R      R
-  // Após troca de cores:
-  //           R
-  //         /   \
-  //        B     B
+  
+  /*
+  Caso: Ambos os filhos são vermelhos.
+  Exemplo:
+  Antes:    B(root)
+          /    \
+        R      R
+  Após troca de cores:
+            R
+          /   \
+         B     B
+  */
   if (cor_no(root->esq) == RED && cor_no(root->dir) == RED) {
     troca_cor(root);
   }
@@ -225,7 +244,7 @@ NO *balancear(NO *root) {
  * @param chave Chave a ser inserida.
  * @return 1 se a inserção for bem-sucedida, 0 caso contrário.
  */
-int insere_arvllrb(ARVLLRB *raiz, int chave) {
+int arvllrb_inserir(ARVLLRB *raiz, int chave) {
   int resp;
 
   // Insere a chave na subárvore.
@@ -252,10 +271,10 @@ NO *insere_no(NO *root, int chave, int *resp) {
     NO *novo = (NO *)malloc(sizeof(NO));
 
     if (!novo) {
-			fprintf(stderr, "Erro: Falha na alocação de memória\n");
-			*resp = 0;
-    return NULL;
-}
+      fprintf(stderr, "Erro: Falha na alocação de memória\n");
+      *resp = 0;
+      return NULL;
+    }
 
     novo->chave = chave;
     novo->cor = RED;
@@ -280,7 +299,6 @@ NO *insere_no(NO *root, int chave, int *resp) {
     root = rotacionar_esquerda(root);
   }
 
-	
   if (cor_no(root->esq) == RED && cor_no(root->esq->esq) == RED) {
     root = rotacionar_direita(root);
   }
@@ -291,14 +309,14 @@ NO *insere_no(NO *root, int chave, int *resp) {
 
   return root;
 }
-int remove_arvllrb(ARVLLRB *root, int chave) {
+int arvllrb_remover(ARVLLRB *root, int chave) {
   // Verifica se a chave existe na árvore antes de tentar removê-la
-  if (consulta_arvllrb(root, chave)) {
+  if (arvllrb_consultar(root, chave)) {
     NO *h = *root; // Salva a raiz atual
 
     // Remove o nó com a chave especificada e reorganiza a árvore
     *root = remove_no(h, chave);
-    
+
     // Se a árvore não estiver vazia, garante que a raiz seja preta
     if (*root != NULL)
       (*root)->cor = BLACK;
@@ -314,7 +332,7 @@ NO *remove_no(NO *root, int chave) {
     // Navega para a subárvore esquerda se a chave for menor
     if (cor_no(root->esq) == BLACK && cor_no(root->esq->esq) == BLACK)
       root = move2_esq_red(root); // Prepara a subárvore esquerda para remoção
-    
+
     // Continua a remoção recursivamente na subárvore esquerda
     root->esq = remove_no(root->esq, chave);
   } else {
@@ -324,7 +342,7 @@ NO *remove_no(NO *root, int chave) {
 
     // Caso a chave seja encontrada e o nó não tenha subárvores
     if (chave == root->chave && (root->dir == NULL)) {
-      free(root); // Libera o nó atual
+      free(root);  // Libera o nó atual
       return NULL; // Retorna nulo para "remover" o nó
     }
 
@@ -334,9 +352,10 @@ NO *remove_no(NO *root, int chave) {
 
     // Caso a chave seja encontrada, substitui pelo sucessor
     if (chave == root->chave) {
-      NO *sucessor = procuraMenor(root->dir); // Encontra o menor na subárvore direita
-      root->chave = sucessor->chave;         // Substitui a chave do nó atual
-      root->dir = removerMenor(root->dir);   // Remove o sucessor
+      NO *sucessor =
+          procuraMenor(root->dir);   // Encontra o menor na subárvore direita
+      root->chave = sucessor->chave; // Substitui a chave do nó atual
+      root->dir = removerMenor(root->dir); // Remove o sucessor
     } else {
       // Continua a remoção recursivamente na subárvore direita
       root->dir = remove_no(root->dir, chave);
@@ -344,13 +363,13 @@ NO *remove_no(NO *root, int chave) {
   }
 
   // Após qualquer alteração, garante que a árvore permaneça balanceada
-  return balancear(root);
+  return balancear_no(root);
 }
 
 NO *removerMenor(NO *root) {
   // Se o nó atual é o menor (não possui filho à esquerda)
   if (root->esq == NULL) {
-    free(root); // Libera o nó atual
+    free(root);  // Libera o nó atual
     return NULL; // Retorna nulo para "remover" o nó
   }
 
@@ -362,7 +381,7 @@ NO *removerMenor(NO *root) {
   root->esq = removerMenor(root->esq);
 
   // Garante que a árvore esteja balanceada após a remoção
-  return balancear(root);
+  return balancear_no(root);
 }
 
 NO *procuraMenor(NO *root) {
@@ -375,25 +394,49 @@ NO *procuraMenor(NO *root) {
   return busca_no; // Retorna o menor nó encontrado
 }
 
-
-void libera_arvllrb(NO *root) {
-    if (root == NULL)
-        return;
-    libera_arvllrb(root->esq);
-    libera_arvllrb(root->dir);
-    free(root);
+int arvllrb_consultar(ARVLLRB *raiz, int chave) {
+  NO *atual = *raiz;
+  while (atual != NULL) {
+    if (chave == atual->chave)
+      return 1; // Chave encontrada
+    if (chave < atual->chave)
+      atual = atual->esq;
+    else
+      atual = atual->dir;
+  }
+  return 0; // Chave não encontrada
 }
 
+// Função auxiliar para imprimir
+void no_imprimir(NO *no) {
+  if (no != NULL) {
+    no_imprimir(no->esq);
+    printf("%d ", no->chave);
+    no_imprimir(no->dir);
+  }
+}
 
-int consulta_arvllrb(ARVLLRB *raiz, int chave) {
-    NO *atual = *raiz;
-    while (atual != NULL) {
-        if (chave == atual->chave)
-            return 1; // Chave encontrada
-        if (chave < atual->chave)
-            atual = atual->esq;
-        else
-            atual = atual->dir;
-    }
-    return 0; // Chave não encontrada
+// Função para imprimir a árvore (em ordem)
+void arvllrb_imprimir(ARVLLRB *raiz) {
+  if (raiz != NULL && *raiz != NULL) {
+    no_imprimir(*raiz);
+    printf("\n");
+  }
+}
+
+// Função auxiliar para liberar
+void no_apagar(NO *no) {
+  if (no != NULL) {
+    no_apagar(no->esq);
+    no_apagar(no->dir);
+    free(no);
+  }
+}
+
+// Função para liberar a árvore
+void arvllrb_apagar(ARVLLRB **raiz) {
+  if (raiz != NULL && *raiz != NULL) {
+    no_apagar(**raiz);
+    *raiz = NULL; // Garante que a raiz seja setada para NULL
+  }
 }

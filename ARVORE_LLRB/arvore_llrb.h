@@ -1,136 +1,70 @@
 #ifndef ARVORE_LLRB_H
-#define ARVORE_LLRB_H
+    #define ARVORE_LLRB_H
 
     #include <stdio.h>
     #include <stdlib.h>
 
+    typedef struct no NO;
     typedef NO *ARVLLRB;
 
     /**
-     * @brief Consulta a árvore em busca de uma certa chave.
+     * @brief Verifica a existência de uma chave na árvore rubro-negra.
      *
-     * @param raiz  Ponteiro de ponteiro da árvore.
-     * @param chave Inteiro do valor procurado.
-     * @return Valor inteiro booleano para o encontro do nó com a chave.
-     */
-    int consulta_arvllrb(ARVLLRB *raiz, int chave);
-
-
-    /**
-     * @brief Limpa toda a árvore.
+     * Realiza uma busca na árvore rubro-negra para verificar se uma chave
+     * específica está presente.
      *
-     * @param root Ponteiro para o nó root.
-     * @return Chamada recursiva para free(root).
-     */
-    void libera_arvllrb(NO *root);
-
-    
-    /**
-     * @brief Retorna a cor de um nó.
+     * @param raiz Ponteiro para a raiz da árvore rubro-negra.
+     * @param chave Valor inteiro da chave a ser consultada.
+     * @return int Retorna 1 se a chave estiver presente, ou 0 caso contrário.
      *
-     * @param H Ponteiro para o nó.
-     * @return Cor do nó (RED ou BLACK). Retorna BLACK se o nó for NULL.
+     * @note A consulta não altera a estrutura da árvore.
      */
-    int cor_no(NO *H);
+    int arvllrb_consultar(ARVLLRB *raiz, int chave);
 
     /**
-     * @brief Troca as cores do nó atual e de seus dois filhos.
+     * @brief Insere uma nova chave na árvore rubro-negra.
      *
-     * @param h Ponteiro para o nó cuja cor será trocada.
+     * @param raiz Ponteiro para a raiz da árvore rubro-negra.
+     * @param chave Valor inteiro a ser inserido na árvore.
+     * @return int Retorna 1 se a inserção foi bem-sucedida, ou 0 em caso de falha.
      */
-    void troca_cor(NO *h);
+    int arvllrb_inserir(ARVLLRB *raiz, int chave);
 
     /**
-     * @brief Realiza uma rotação à esquerda no nó fornecido.
+     * @brief Remove uma chave da árvore rubro-negra, se existir.
      *
-     * @param root Ponteiro para o nó que será rotacionado.
-     * @return Novo nó raiz após a rotação à esquerda.
+     * @param raiz Ponteiro para a raiz da árvore rubro-negra.
+     * @param chave Valor inteiro a ser removido da árvore.
+     * @return int Retorna 1 se a remoção foi bem-sucedida, ou 0 se a chave não foi
+     * encontrada.
      */
-    NO *rotacionar_esquerda(NO *root);
+    int arvllrb_remover(ARVLLRB *raiz, int chave);
 
     /**
-     * @brief Realiza uma rotação à direita no nó fornecido.
+     * @brief Imprime todos os elementos da árvore rubro-negra em ordem (ou em outro
+     * formato específico).
      *
-     * @param root Ponteiro para o nó que será rotacionado.
-     * @return Novo nó raiz após a rotação à direita.
+     * @param raiz Ponteiro para a raiz da árvore rubro-negra.
+     *
+     * @note A impressão pode ser adaptada para diferentes representações, como
+     * em-ordem, pré-ordem ou pós-ordem.
      */
-    NO *rotacionar_direita(NO *root);
+    void arvllrb_imprimir(ARVLLRB *raiz);
 
     /**
-     * @brief Move um nó vermelho do lado direito para o lado esquerdo.
+     * @brief Apaga a árvore rubro-negra, liberando toda a memória alocada.
      *
-     * @param root Ponteiro para o nó atual.
-     * @return Ponteiro para o nó ajustado após o movimento.
+     * @param raiz Endereço do ponteiro para a raiz da árvore rubro-negra.
+     * Após a execução, o ponteiro será definido como NULL.
      */
-    NO *move2_esq_red(NO *root);
+    void arvllrb_apagar(ARVLLRB **raiz);
 
     /**
-     * @brief Move um nó vermelho do lado esquerdo para o lado direito.
+     * @brief Cria uma nova árvore rubro-negra vazia.
      *
-     * @param root Ponteiro para o nó atual.
-     * @return Ponteiro para o nó ajustado após o movimento.
+     * @return ARVLLRB* Retorna um ponteiro para a nova árvore rubro-negra, ou NULL
+     * em caso de erro na alocação.
      */
-    NO *move2_dir_red(NO *root);
-
-    /**
-     * @brief Realiza o balanceamento da árvore Rubro-Negra a partir de um nó.
-     *
-     * @param root Ponteiro para o nó que será balanceado.
-     * @return Ponteiro para o nó ajustado após o balanceamento.
-     */
-    NO *balancear(NO *root);
-
-    /**
-     * @brief Insere uma chave na árvore Rubro-Negra.
-     *
-     * @param raiz Ponteiro para o ponteiro da raiz da árvore.
-     * @param chave Chave a ser inserida.
-     * @return 1 se a inserção for bem-sucedida, 0 caso contrário.
-     */
-    int insere_arvllrb(ARVLLRB *raiz, int chave);
-
-    /**
-     * @brief Insere um nó em uma subárvore Rubro-Negra.
-     *
-     * @param root Ponteiro para a raiz da subárvore.
-     * @param chave Chave a ser inserida.
-     * @param resp Ponteiro para o código de resposta da operação.
-     * @return Ponteiro para o nó raiz ajustado após a inserção.
-     */
-    NO *insere_no(NO *root, int chave, int *resp);
-
-    /**
-     * @brief Remove uma chave da árvore Rubro-Negra.
-     *
-     * @param root Ponteiro para o ponteiro da raiz da árvore.
-     * @param chave Chave a ser removida.
-     * @return 1 se a remoção for bem-sucedida, 0 caso contrário.
-     */
-    int remove_arvllrb(ARVLLRB *root, int chave);
-
-    /**
-     * @brief Remove um nó com uma determinada chave em uma subárvore Rubro-Negra.
-     *
-     * @param root Ponteiro para a raiz da subárvore.
-     * @param chave Chave a ser removida.
-     * @return Ponteiro para o nó raiz ajustado após a remoção.
-     */
-    NO *remove_no(NO *root, int chave);
-
-    /**
-     * @brief Remove o menor nó de uma subárvore Rubro-Negra.
-     *
-     * @param root Ponteiro para a raiz da subárvore.
-     * @return Ponteiro para o nó raiz ajustado após a remoção do menor nó.
-     */
-    NO *removerMenor(NO *root);
-
-    /**
-     * @brief Busca o menor nó em uma subárvore Rubro-Negra.
-     *
-     * @param root Ponteiro para a raiz da subárvore.
-     * @return Ponteiro para o menor nó encontrado.
-     */
-    NO *procuraMenor(NO *root);
+    ARVLLRB *arvllrb_criar(void);
 
 #endif

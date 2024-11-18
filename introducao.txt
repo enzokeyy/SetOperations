@@ -3,12 +3,64 @@ a específica implementação deve ser escolhida pelo usuário em tempo de execu
 as específicas duas formas de implementar o CONJUNTO sejam a que possibilitem a menor 
 complexidade computacional possível.
 
-TAD's que poderiam ser utilizados: 
+Por que foi escolhido a AVL e a Red-Black para representar conjuntos?
 
-Hash Table e AVL
+Criar - Apagar - Inserir - Remover - imprimir
 
-Capítulos no "Introdução à Algoritmos" de Cormen
+Cria-se a árvore, independente, insere itens após falar o número de elementos,
+imprime e depois apaga a árvore. 
 
-Capítulo 12: * Binary Search Trees (BSTs) 
+Insere caso necessário e remove caso necessário.
 
-Capítulo 13: * Red-Black Trees
+Elemento pertence? - União entre dois conjuntos - Intersecção
+
+0 - AVL
+1 - RED-BLACK
+
+n elementos p/ cada conjunto
+    -> insere cada elemento: 1 2 3 4 6 7 ... n
+
+1 - pertence
+2 - uniao 
+3 - interseccao
+
+A estrutura de árvore foi escolhida para implementar o TAD de conjunto (set) devido 
+à sua eficiência em operações de busca, inserção e remoção, todas realizadas em tempo
+O(log(n)) em árvores balanceadas. Essa característica é crucial para operações de conjuntos
+que frequentemente envolvem buscas, como verificar a presença de elementos, e modificações, 
+como união, interseção e diferença. Entre as árvores balanceadas estudadas, foram consideradas
+a Árvore AVL e a Árvore Rubro-Negra (Red-Black), ambas binárias de busca balanceadas, mas com 
+características distintas que influenciaram a escolha:
+
+Por que usar uma estrutura balanceada?
+
+Árvores binárias simples podem degenerar para uma lista ligada em cenários adversos, com complexidade
+de busca, inserção e remoção degradando para O(n). Árvores balanceadas, como AVL e Rubro-Negra, garantem 
+que a altura da árvore seja mantida em O(log(n)), preservando a eficiência das operações. Comparação AVL vs. Rubro-Negra:
+
+AVL (Adelson-Velsky and Landis):
+
+Mais estritamente balanceada: a diferença de altura entre as subárvores de qualquer nó é no máximo 1.
+Oferece buscas ligeiramente mais rápidas, pois a árvore é mais próxima de uma estrutura perfeitamente balanceada.
+Inserções e remoções são mais caras em termos de reestruturação (número maior de rotações) devido à necessidade de 
+manter o balanceamento estrito.
+
+Rubro-Negra:
+
+Balanceamento mais flexível: permite que a altura das subárvores difira por um fator maior (até o dobro da menor).
+Inserções e remoções são geralmente mais rápidas, com menos rotações em comparação com AVL.
+Embora a busca possa ser marginalmente mais lenta que em AVL, ainda opera em O(log(n)), sendo eficiente para a 
+maioria das aplicações.
+
+Justificativa da escolha:
+
+Para o TAD de conjunto, as operações de inserção e remoção são tão importantes quanto a busca, pois operações como 
+união, interseção e diferença frequentemente exigem múltiplas  inserções e remoções. Árvore Rubro-Negra foi 
+escolhida como estrutura subjacente devido ao seu melhor desempenho médio para inserções e remoções, tornando-a 
+mais eficiente para as operações de conjunto. Embora a AVL tenha uma leve vantagem em buscas isoladas, a menor sobrecarga
+de balanceamento da Rubro-Negra torna-a ideal para um conjunto onde todas as operações precisam ser equilibradas em termos de custo.
+Resumo:
+A escolha de árvores balanceadas foi motivada pela necessidade de garantir eficiência nas operações de busca, inserção e 
+remoção, fundamentais para um TAD de conjunto. Dentre as opções, a Árvore Rubro-Negra 
+foi selecionada por apresentar um bom compromisso entre eficiência em busca e menor custo nas operações de modificação, 
+atendendo perfeitamente às demandas do TAD.
