@@ -1,5 +1,5 @@
 // Cliente - onde as entradas serão lidas, logo, faz-se um menu
-#include <./set/set.h>
+#include <../set/set.h>
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -std=c99
-INCLUDES = -I ./set -I ./AVL -I ./ARVORE_LLRB
+INCLUDES = -I ../AVL -I ../ARVORE_LLRB
 
-SRC = main.c ./set/set.c ./ARVORE_LLRB/arvore_llrb.c ./AVL/bst_avl.c
+SRC = main.c set.c ../ARVORE_LLRB/arvore_llrb.c ../AVL/bst_avl.c
 OBJ = main
 
 all: $(OBJ)

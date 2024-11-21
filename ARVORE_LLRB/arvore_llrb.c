@@ -21,20 +21,24 @@ typedef struct no {
 // Auxiliares
 int cor_no(NO *H);
 void troca_cor(NO *h);
-NO *rotacionar_esquerda(NO *root);
-NO *rotacionar_direita(NO *root);
+NO *rotacionar_esquerda_llrb(NO *root);
+NO *rotacionar_direita_llrb(NO *root);
 NO *move2_esq_red(NO *root);
 NO *move2_dir_red(NO *root);
-NO *balancear_no(NO *root);
-NO *insere_no(NO *root, int chave, int *resp);
-NO *remove_no(NO *root, int chave);
+NO *balancear_no_llrb(NO *root);
+NO *insere_no_llrb(NO *root, int chave, int *resp);
+NO *remove_no_llrb(NO *root, int chave);
 NO *removerMenor(NO *root);
 NO *procuraMenor(NO *root);
 
 int arvllrb_consultar(ARVLLRB *raiz, int chave);
 
-void no_imprimir(NO *no);
-void no_apagar(NO *no);
+void no_imprimir_llrb(NO *no);
+void no_apagar_llrb(NO *no);
+
+NO *obter_esquerda_llrb(NO *no);
+NO *obter_direita_llrb(NO *no);
+int obter_valor_llrb(NO *no);
 
 // Principais
 
@@ -83,7 +87,7 @@ void troca_cor(NO *h) {
 // Rotações
 
 // Rotação à direita - nós tendendo à esquerda
-NO *rotacionar_direita(NO *root) {
+NO *rotacionar_direita_llrb(NO *root) {
   // Defini-se o novoRoot
   NO *novoRoot = root->esq;
 
@@ -101,7 +105,7 @@ NO *rotacionar_direita(NO *root) {
 }
 
 // Rotação à esquerda - nós tendendo à direita
-NO *rotacionar_esquerda(NO *root) {
+NO *rotacionar_esquerda_llrb(NO *root) {
   NO *novoRoot = root->dir;
   root->dir = novoRoot->esq;
 
@@ -138,8 +142,8 @@ NO *move2_esq_red(NO *root) {
   */
 
   if (cor_no(root->dir->esq) == RED) {
-    root->dir = rotacionar_direita(root->dir); // Ajusta o filho direito.
-    root = rotacionar_esquerda(root); // Rotaciona o nó atual à esquerda.
+    root->dir = rotacionar_direita_llrb(root->dir); // Ajusta o filho direito.
+    root = rotacionar_esquerda_llrb(root); // Rotaciona o nó atual à esquerda.
     troca_cor(root);                  // Restaura as cores.
   }
 
@@ -170,7 +174,7 @@ NO *move2_dir_red(NO *root) {
   */
 
   if (cor_no(root->esq->esq) == RED) {
-    root = rotacionar_esquerda(root); // Rotaciona o nó atual à esquerda.
+    root = rotacionar_esquerda_llrb(root); // Rotaciona o nó atual à esquerda.
     troca_cor(root);                  // Restaura as cores.
   }
 
@@ -183,7 +187,7 @@ NO *move2_dir_red(NO *root) {
  * @param root Ponteiro para o nó raiz da subárvore.
  * @return Ponteiro para o nó ajustado após o balanceamento.
  */
-NO *balancear_no(NO *root) {
+NO *balancear_no_llrb(NO *root) {
   /*
   Caso: Filho direito é vermelho, mas filho esquerdo não.
    Exemplo:
@@ -197,7 +201,7 @@ NO *balancear_no(NO *root) {
   */
 
   if (cor_no(root->dir) == RED) {
-    root = rotacionar_esquerda(root);
+    root = rotacionar_esquerda_llrb(root);
   }
 
   /*
@@ -215,7 +219,7 @@ NO *balancear_no(NO *root) {
   */
   if (root->esq != NULL && cor_no(root->dir) == RED &&
       cor_no(root->esq->esq) == RED) {
-    root = rotacionar_direita(root);
+    root = rotacionar_direita_llrb(root);
   }
 
   
@@ -248,7 +252,7 @@ int arvllrb_inserir(ARVLLRB *raiz, int chave) {
   int resp;
 
   // Insere a chave na subárvore.
-  *(raiz) = insere_no(*raiz, chave, &resp);
+  *(raiz) = insere_no_llrb(*raiz, chave, &resp);
 
   // Garante que a raiz sempre será preta após a inserção.
   if ((*raiz) != NULL)
@@ -265,7 +269,7 @@ int arvllrb_inserir(ARVLLRB *raiz, int chave) {
  * @param resp Ponteiro para o código de resposta da operação.
  * @return Ponteiro para o nó raiz ajustado após a inserção.
  */
-NO *insere_no(NO *root, int chave, int *resp) {
+NO *insere_no_llrb(NO *root, int chave, int *resp) {
   if (root == NULL) {
     // Cria um novo nó vermelho com a chave.
     NO *novo = (NO *)malloc(sizeof(NO));
@@ -289,18 +293,18 @@ NO *insere_no(NO *root, int chave, int *resp) {
   else {
     // Insere na subárvore esquerda ou direita.
     if (chave < root->chave)
-      root->esq = insere_no(root->esq, chave, resp);
+      root->esq = insere_no_llrb(root->esq, chave, resp);
     else
-      root->dir = insere_no(root->dir, chave, resp);
+      root->dir = insere_no_llrb(root->dir, chave, resp);
   }
 
   // Balanceia a árvore após a inserção.
   if (cor_no(root->dir) == RED && cor_no(root->esq) == BLACK) {
-    root = rotacionar_esquerda(root);
+    root = rotacionar_esquerda_llrb(root);
   }
 
   if (cor_no(root->esq) == RED && cor_no(root->esq->esq) == RED) {
-    root = rotacionar_direita(root);
+    root = rotacionar_direita_llrb(root);
   }
 
   if (cor_no(root->esq) == RED && cor_no(root->dir) == RED) {
@@ -315,7 +319,7 @@ int arvllrb_remover(ARVLLRB *root, int chave) {
     NO *h = *root; // Salva a raiz atual
 
     // Remove o nó com a chave especificada e reorganiza a árvore
-    *root = remove_no(h, chave);
+    *root = remove_no_llrb(h, chave);
 
     // Se a árvore não estiver vazia, garante que a raiz seja preta
     if (*root != NULL)
@@ -327,18 +331,18 @@ int arvllrb_remover(ARVLLRB *root, int chave) {
   }
 }
 
-NO *remove_no(NO *root, int chave) {
+NO *remove_no_llrb(NO *root, int chave) {
   if (chave < root->chave) {
     // Navega para a subárvore esquerda se a chave for menor
     if (cor_no(root->esq) == BLACK && cor_no(root->esq->esq) == BLACK)
       root = move2_esq_red(root); // Prepara a subárvore esquerda para remoção
 
     // Continua a remoção recursivamente na subárvore esquerda
-    root->esq = remove_no(root->esq, chave);
+    root->esq = remove_no_llrb(root->esq, chave);
   } else {
     // Garante que a subárvore direita esteja balanceada
     if (cor_no(root->esq) == RED)
-      root = rotacionar_direita(root); // Rotaciona para a direita se necessário
+      root = rotacionar_direita_llrb(root); // Rotaciona para a direita se necessário
 
     // Caso a chave seja encontrada e o nó não tenha subárvores
     if (chave == root->chave && (root->dir == NULL)) {
@@ -358,12 +362,12 @@ NO *remove_no(NO *root, int chave) {
       root->dir = removerMenor(root->dir); // Remove o sucessor
     } else {
       // Continua a remoção recursivamente na subárvore direita
-      root->dir = remove_no(root->dir, chave);
+      root->dir = remove_no_llrb(root->dir, chave);
     }
   }
 
   // Após qualquer alteração, garante que a árvore permaneça balanceada
-  return balancear_no(root);
+  return balancear_no_llrb(root);
 }
 
 NO *removerMenor(NO *root) {
@@ -381,7 +385,7 @@ NO *removerMenor(NO *root) {
   root->esq = removerMenor(root->esq);
 
   // Garante que a árvore esteja balanceada após a remoção
-  return balancear_no(root);
+  return balancear_no_llrb(root);
 }
 
 NO *procuraMenor(NO *root) {
@@ -408,27 +412,27 @@ int arvllrb_consultar(ARVLLRB *raiz, int chave) {
 }
 
 // Função auxiliar para imprimir
-void no_imprimir(NO *no) {
+void no_imprimir_llrb(NO *no) {
   if (no != NULL) {
-    no_imprimir(no->esq);
+    no_imprimir_llrb(no->esq);
     printf("%d ", no->chave);
-    no_imprimir(no->dir);
+    no_imprimir_llrb(no->dir);
   }
 }
 
 // Função para imprimir a árvore (em ordem)
 void arvllrb_imprimir(ARVLLRB *raiz) {
   if (raiz != NULL && *raiz != NULL) {
-    no_imprimir(*raiz);
+    no_imprimir_llrb(*raiz);
     printf("\n");
   }
 }
 
 // Função auxiliar para liberar
-void no_apagar(NO *no) {
+void no_apagar_llrb(NO *no) {
   if (no != NULL) {
-    no_apagar(no->esq);
-    no_apagar(no->dir);
+    no_apagar_llrb(no->esq);
+    no_apagar_llrb(no->dir);
     free(no);
   }
 }
@@ -436,7 +440,29 @@ void no_apagar(NO *no) {
 // Função para liberar a árvore
 void arvllrb_apagar(ARVLLRB **raiz) {
   if (raiz != NULL && *raiz != NULL) {
-    no_apagar(**raiz);
+    no_apagar_llrb(**raiz);
     *raiz = NULL; // Garante que a raiz seja setada para NULL
   }
 }
+
+
+// Funções para obter sub-árvore e valor do nó
+NO *obter_esquerda_llrb(NO *no) {
+    if (!no) return NULL;
+    return no->esq;
+}
+
+NO *obter_direita_llrb(NO *no) {
+    if (!no) return NULL;
+    return no->dir;
+}
+
+int obter_valor_llrb(NO *no) {
+    if (!no) {
+        printf("Erro: nó LLRB inválido.\n");
+        return -1;
+    }
+    return no->chave; // Certifique-se de que 'chave' é inicializada corretamente.
+}
+
+

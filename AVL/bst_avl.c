@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "bst_avl.h"
 
 // Struct Nó
@@ -21,25 +20,29 @@ int max(int a, int b);
 
 NO *criar_no(int chave);
 
-NO *rotacionar_direita(NO *root);
-NO *rotacionar_esquerda(NO *root);
+NO *rotacionar_direita_avl(NO *root);
+NO *rotacionar_esquerda_avl(NO *root);
 
 NO *rotacionar_esquerda_direita(NO *root);
 NO *rotacionar_direita_esquerda(NO *root);
 
 int no_fator_b(NO *root);
-NO *balancear_no(NO *root);
+NO *balancear_no_avl(NO *root);
 
-NO *no_inserir(NO *root, int chave);
+NO *no_inserir_avl(NO *root, int chave);
 NO *no_min_valor(NO *root);
 
-NO *no_remover(NO *root, int chave);
+NO *no_remover_avl(NO *root, int chave);
 
-void no_imprimir(NO *no);
+void no_imprimir_avl(NO *no);
 
-NO *no_buscar(NO *no, int chave);
+NO *no_buscar_avl(NO *no, int chave);
 
-void no_apagar(NO *no);
+void no_apagar_avl(NO *no);
+
+NO *obter_esquerda_avl(NO *no);
+NO *obter_direita_avl(NO *no);
+int obter_valor_avl(NO *no);
 
 // Principais
 void avl_imprimir(AVL *T);
@@ -89,7 +92,7 @@ NO *criar_no(int chave) {
     Apenas trocamos os vetores, os nomes estão bem sugestivos, e
     pensamos o "filho_filho" como uma possível existência.
 */
-NO *rotacionar_direita(NO *root) {
+NO *rotacionar_direita_avl(NO *root) {
   // novoRoot é o esquerdo do root atual.
   NO *novoRoot = root->esq;
   NO *filho_filho = novoRoot->dir;
@@ -121,7 +124,7 @@ NO *rotacionar_direita(NO *root) {
                 (filho_filho)
 
 */
-NO *rotacionar_esquerda(NO *root) {
+NO *rotacionar_esquerda_avl(NO *root) {
   NO *novoRoot = root->dir;
   NO *filho_filho = novoRoot->esq;
 
@@ -170,14 +173,14 @@ NO *rotacionar_esquerda_direita(NO *root) {
   Busca
   */
 
-  root->esq = rotacionar_esquerda(root->esq);
-  return rotacionar_direita(root);
+  root->esq = rotacionar_esquerda_avl(root->esq);
+  return rotacionar_direita_avl(root);
 }
 
 // Rotação dupla à direita
 NO *rotacionar_direita_esquerda(NO *root) {
-  root->dir = rotacionar_direita(root->dir);
-  return rotacionar_esquerda(root);
+  root->dir = rotacionar_direita_avl(root->dir);
+  return rotacionar_esquerda_avl(root);
 }
 
 // Função para calcular o fator de balanceamento de um nó
@@ -189,14 +192,14 @@ int no_fator_b(NO *root) {
 }
 
 // Função para balancear a árvore AVL
-NO *balancear_no(NO *root) {
+NO *balancear_no_avl(NO *root) {
   int fb = no_fator_b(root);
 
   if (fb > 1 && no_fator_b(root->esq) >= 0)
-    return rotacionar_direita(root);
+    return rotacionar_direita_avl(root);
 
   if (fb < -1 && no_fator_b(root->dir) <= 0)
-    return rotacionar_esquerda(root);
+    return rotacionar_esquerda_avl(root);
 
   if (fb > 1 && no_fator_b(root->esq) < 0)
     return rotacionar_esquerda_direita(root);
@@ -208,7 +211,7 @@ NO *balancear_no(NO *root) {
 }
 
 // Função para inserir um nó na árvore AVL
-NO *no_inserir(NO *root, int chave) {
+NO *no_inserir_avl(NO *root, int chave) {
   if (root == NULL) {
     // Se for nulo o nó atual, então pode criar o nó com a chave passada.
     return criar_no(chave);
@@ -217,9 +220,9 @@ NO *no_inserir(NO *root, int chave) {
   if (chave > root->chave) {
     // Perceba que o retorno da função deve ser um NO*, logo, devemos passar
     // o nó para receber a entrada dele mesmo na função recursivamente.
-    root->dir = no_inserir(root->dir, chave);
+    root->dir = no_inserir_avl(root->dir, chave);
   } else if (chave < root->chave) {
-    root->esq = no_inserir(root->esq, chave);
+    root->esq = no_inserir_avl(root->esq, chave);
   } else {
     // Se achou a chave, não podemos adicionar outro nó com a mesma chave
     printf("Elemento já existente\n");
@@ -232,7 +235,7 @@ NO *no_inserir(NO *root, int chave) {
   // Pegamos o máximo e somamos um, já que somamos a altura deve mesmo
 
   // Balanceamos o root (AVL)
-  return balancear_no(root);
+  return balancear_no_avl(root);
 }
 
 // Função para encontrar o valor mínimo em uma árvore AVL
@@ -246,15 +249,15 @@ NO *no_min_valor(NO *root) {
 }
 
 // Função para remover um nó da árvore AVL
-NO *no_remover(NO *root, int chave) {
+NO *no_remover_avl(NO *root, int chave) {
   if (root == NULL) {
     return NULL;
   }
   // Percurso em Ordem para achar a chave de acordo com o nó atual (root)
   if (chave < root->chave) {
-    root->esq = no_remover(root->esq, chave);
+    root->esq = no_remover_avl(root->esq, chave);
   } else if (chave > root->chave) {
-    root->dir = no_remover(root->dir, chave);
+    root->dir = no_remover_avl(root->dir, chave);
   } else {
     // Caso em que foi encontrado a chave.
 
@@ -280,7 +283,7 @@ NO *no_remover(NO *root, int chave) {
       // Então agora passamos recursivamente para eliminar o nó (FOLHA)
       // que está à direita do root (onde foi achado o menor) para remover
       // o nó com a chave passada.
-      root->dir = no_remover(root->dir, temp->chave);
+      root->dir = no_remover_avl(root->dir, temp->chave);
     }
   }
 
@@ -288,45 +291,45 @@ NO *no_remover(NO *root, int chave) {
   root->height = max(altura_no(root->esq), altura_no(root->dir)) + 1;
 
   // Balanceamos a partir do root
-  return balancear_no(root);
+  return balancear_no_avl(root);
 }
 
 // Função que opera em um nó (impressão)
-void no_imprimir(NO *no) {
+void no_imprimir_avl(NO *no) {
   if (no != NULL) {
-    no_imprimir(no->esq);
+    no_imprimir_avl(no->esq);
     printf("%d ", no->chave);
-    no_imprimir(no->dir);
+    no_imprimir_avl(no->dir);
   }
 }
 
 // Função que opera na árvore (impressão)
 void avl_imprimir(AVL *T) {
   if (T != NULL && *T != NULL) {
-    no_imprimir(*T);
+    no_imprimir_avl(*T);
     printf("\n");
   }
 }
 
 // Função que opera em um nó (busca)
-NO *no_buscar(NO *no, int chave) {
+NO *no_buscar_avl(NO *no, int chave) {
   if (no == NULL || no->chave == chave) {
     return no;
   }
   if (chave < no->chave) {
-    return no_buscar(no->esq, chave);
+    return no_buscar_avl(no->esq, chave);
   }
-  return no_buscar(no->dir, chave);
+  return no_buscar_avl(no->dir, chave);
 }
 
 
 // Função que opera na árvore (busca)
 int avl_buscar(AVL *T, int chave) {
   if (T == NULL || *T == NULL) {
-    return NULL;
+    return 0;
   }
 
-  NO *resultado = no_buscar(*T, chave);
+  NO *resultado = no_buscar_avl(*T, chave);
   if (resultado != NULL) {
     return 1; // Retorna um ponteiro para a chave
   }
@@ -339,7 +342,7 @@ int avl_inserir(AVL *T, int chave) {
     return -1; // Indica falha na inserção (ponteiro nulo)
   }
 
-  NO *novo = no_inserir(*T, chave); // Inserção no nó
+  NO *novo = no_inserir_avl(*T, chave); // Inserção no nó
   if (novo == NULL) {
     return 0; // Indica que a chave já existe
   }
@@ -354,7 +357,7 @@ int avl_remover(AVL *T, int chave) {
     return 0; // Indica falha na remoção
   }
 
-  NO *removido = no_remover(*T, chave); // Remove o nó
+  NO *removido = no_remover_avl(*T, chave); // Remove o nó
   if (removido == NULL) {
     return 0; // Indica que a chave não foi encontrada
   }
@@ -364,10 +367,10 @@ int avl_remover(AVL *T, int chave) {
 }
 
 // Função auxiliar para liberar AVL
-void no_apagar(NO *no) {
+void no_apagar_avl(NO *no) {
   if (no != NULL) {
-    no_apagar(no->esq);
-    no_apagar(no->dir);
+    no_apagar_avl(no->esq);
+    no_apagar_avl(no->dir);
     free(no);
   }
 }
@@ -375,8 +378,27 @@ void no_apagar(NO *no) {
 // Função para liberar a árvore AVL
 void avl_apagar(AVL **T) {
   if (T != NULL && *T != NULL) {
-    no_apagar((**T));
+    no_apagar_avl((**T));
     free(*T);
     *T = NULL;
   }
+}
+
+// Funções para obter sub-árvore e valor do nó
+NO *obter_esquerda_avl(NO *no) {
+    if (!no) return NULL;
+    return no->esq;
+}
+
+NO *obter_direita_avl(NO *no) {
+    if (!no) return NULL;
+    return no->dir;
+}
+
+int obter_valor_avl(NO *no) {
+    if (!no) {
+        printf("Erro: nó AVL inválido.\n");
+        return -1;
+    }
+    return no->chave; // Certifique-se de que 'chave' é inicializada corretamente.
 }
